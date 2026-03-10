@@ -4,6 +4,7 @@
 
 # Ignore entire project directory
 project/*
+!project/bin/*
 
 # Ignore generated stuff
 bin/*
