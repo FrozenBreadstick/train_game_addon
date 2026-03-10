@@ -55,6 +55,5 @@ run_godot.bat
 
 # Ignore everything in godot-cpp
 godot-cpp/*
-
-# But keep the README
-!godot-cpp/README.md
+#Except help file
+!godot-cpp/HELP.md
