@@ -18,6 +18,10 @@ void Poisson::_bind_methods() {
 }
 
 void Poisson::set_shape(const PackedVector2Array &shape) {
+    if (shape.is_empty()) {
+        ERR_PRINT("Poisson Error: Provided shape is empty.");
+        set_rect(2,2);
+    }
     //Sets the internal shape to a polygon
     _shape = shape;
     _type = 2;
@@ -49,10 +53,20 @@ PackedVector2Array Poisson::get_shape() const {
 PackedVector2Array Poisson::generate(float min_dist, int retries, const PackedVector2Array &append_to) {
     PackedVector2Array bb = _find_polygon_bounds(_shape);
 
-    float cell_size = min_dist / Math::sqrt(2.0f);
+    if (min_dist <= 0.0f) {
+        ERR_PRINT("Poisson Error: min_dist must be greater than 0.");
+        return PackedVector2Array();
+    }
 
     int bb_width = bb[2].x - bb[0].x;
     int bb_height = bb[2].y - bb[0].y;
+
+    if (bb_width <= 0 || bb_height <= 0) {
+        ERR_PRINT("Poisson Error: Shape bounds must be greater than 0.");
+        return PackedVector2Array();
+    }
+
+    float cell_size = min_dist / Math::sqrt(2.0f);
 
     int cols = Math::ceil(bb_width / cell_size);
     int rows = Math::ceil(bb_height / cell_size);
@@ -106,7 +120,10 @@ PackedVector2Array Poisson::generate(float min_dist, int retries, const PackedVe
 };
 
 PackedVector2Array Poisson::_find_polygon_bounds(PackedVector2Array &shape) { //The AABB of the shape
-    if(_type == 0 || _type == 1) return get_shape(); //Just use the shape for Circles and Squares
+    if(_type == 0 || _type == 1) { //Just use the shape for Circles and Squares
+        _stored_bounds = get_shape();
+        return _stored_bounds; 
+    }
 
     float maxX = shape[0].x, maxY = shape[0].y;
     float minX = shape[0].x, minY = shape[0].y;
@@ -153,8 +170,10 @@ bool Poisson::_is_in_shape(const PackedVector2Array &shape, Vector2 &point) {
         Vector2 pj = shape[j];
         
         //Raycast check, first see if we are above or below both points in the line, and as such, not intersecting
-        if (((pi.y > point.y) != (pj.y > point.y)) && (point.x < (pj.x - pi.x) * (point.y - pi.y) / (pj.y - pi.y) + pi.x)) {
-            inside = !inside;
+        if (pi.y != pj.y) {
+            if (((pi.y > point.y) != (pj.y > point.y)) && (point.x < (pj.x - pi.x) * (point.y - pi.y) / (pj.y - pi.y) + pi.x)) {
+                inside = !inside;
+            }
         }
     }
     return inside;

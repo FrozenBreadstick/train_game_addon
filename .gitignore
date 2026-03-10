@@ -49,3 +49,6 @@ compile_commands.json
 # Cmake
 cmake-build*
 CMakeUserPresets.json
+
+# Custom stuff
+run_godot.bat
