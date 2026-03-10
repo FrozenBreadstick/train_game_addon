@@ -1,7 +1,6 @@
 #include "poisson.h"
 
 void Poisson::_bind_methods() {
-    //D_METHOD("gdscript_name", "arg1_name", "arg2_name")
     ClassDB::bind_method(D_METHOD("set_shape", "shape"), &Poisson::set_shape);
     ClassDB::bind_method(D_METHOD("set_rect", "length", "width"), &Poisson::set_rect);
     ClassDB::bind_method(D_METHOD("set_circle", "radius"), &Poisson::set_circle);
@@ -9,7 +8,6 @@ void Poisson::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_shape"), &Poisson::get_shape);
     ClassDB::bind_method(D_METHOD("get_bounds"), &Poisson::get_bounds);
 
-    //To give 'append_to' a default value in GDScript, we use DEFVAL() at the end.
     ClassDB::bind_method(
         D_METHOD("generate", "min_dist", "retries", "append_to"), 
         &Poisson::generate, 
